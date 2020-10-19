@@ -55,7 +55,7 @@ class mVue {
   }
   // 数据响应化
   defineReactive(obj, key, val) {
-    // 递归调用
+    // 递归调用 深度监听
     this.observe(val);
     Object.defineProperty(obj, key, {
       get() {
