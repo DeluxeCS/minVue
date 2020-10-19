@@ -6,8 +6,10 @@ class mVue {
     // 监听函数
     this.observe(this.$data);
 
-    new Watcher();
-    this.$data.test;
+    new Compile(options.el, this);
+    if (options.created) {
+      this.$options.created.call(this);
+    }
   }
 
   //   数组更新
@@ -51,6 +53,8 @@ class mVue {
     if (typeof value === "object") {
       // 遍历data对象
       Object.keys(value).forEach((key) => {
+        // 定义数据代理
+        this.proxyData(key);
         // 定义响应化
         this.defineReactive(value, key, value[key]);
       });
@@ -76,6 +80,17 @@ class mVue {
         // console.log(`${key}的值更新为${val}`);
         // setter方法触发,dep通知watcher调用update方法
         dep.notify();
+      },
+    });
+  }
+  // 定义数据代理
+  proxyData(key) {
+    Object.defineProperty(this, key, {
+      get() {
+        return this.$data[key];
+      },
+      set(val) {
+        this.$data[key] = val;
       },
     });
   }
@@ -105,11 +120,17 @@ class Dep {
 
 // 发布订阅
 class Watcher {
-  constructor() {
+  constructor(vm, key, cb) {
+    this.vm = vm;
+    this.key = key;
+    this.cb = cb;
     // 将当前watcher的实例指向静态dep的target 实现组件间的通信
     Dep.target = this;
+    // 触发getter添加依赖
+    this.vm[this.key];
+    Dep.target = null;
   }
   updateView() {
-    console.log("属性更新");
+    this.cb.call(this.vm, this.vm[this.key]);
   }
 }

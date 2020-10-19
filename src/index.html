@@ -3,29 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DefineProperty</title>
+    <title>MinVue</title>
   </head>
   <body>
+    <div id="app">
+      <p>{{name}}</p>
+      <p m-text="name"></p>
+      <p>{{age}}</p>
+      <p>{{doubleAge}}</p>
+      <input type="text" m-model="name" />
+      <button @click="changeName">事件</button>
+      <div m-html="html"></div>
+    </div>
+    <script src="./js/compile.js"></script>
     <script src="./js/mVue.js"></script>
     <script>
-      const app = new mVue({
+      let app = new mVue({
+        el: "#app",
         data: {
-          test: "test info",
-          user: {
-            name: "jack",
-            age: "23",
+          name: "测试信息1",
+          age: 24,
+          info: 111111,
+          html: "<button>按钮</button>",
+        },
+        created() {
+          setTimeout(() => {
+            this.name = "测试信息2";
+          }, 1500);
+        },
+        methods: {
+          changeName() {
+            (this.name = "new Start"), (this.age = 18), (this.id = "xx");
           },
-          UserArray: [
-            { id: "001", name: "xe" },
-            { id: "002", name: "ww" },
-            { id: "003", name: "ls" },
-            { id: "004", name: "zl" },
-          ],
         },
       });
-      app.$data.test = "更新成功";
-      app.$data.user.name = "jarry";
-      app.$data.UserArray.push({ id: "005", name: "zj" });
     </script>
   </body>
 </html>
