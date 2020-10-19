@@ -5,6 +5,9 @@ class mVue {
     this.$data = options.data;
     // 监听函数
     this.observe(this.$data);
+
+    new Watcher();
+    this.$data.test;
   }
 
   //   数组更新
@@ -57,8 +60,12 @@ class mVue {
   defineReactive(obj, key, val) {
     // 递归调用 深度监听
     this.observe(val);
+    // 当前作用于下生成的dep是相对独立的
+    const dep = new Dep();
     Object.defineProperty(obj, key, {
       get() {
+        // 读取数据,触发getter函数将当前watcher对象(存放在Dep.target中)收集到Dep类中去
+        Dep.target && dep.addDep(Dep.target);
         return val;
       },
       set(newVal) {
@@ -66,8 +73,43 @@ class mVue {
           return;
         }
         val = newVal;
-        console.log(`${key}的值更新为${val}`);
+        // console.log(`${key}的值更新为${val}`);
+        // setter方法触发,dep通知watcher调用update方法
+        dep.notify();
       },
     });
+  }
+}
+
+// 负责管理watcher
+class Dep {
+  constructor() {
+    // 声明数组用于存放若干依赖
+    this.deps = [];
+  }
+
+  //   watcher订阅dep
+  addDep(dep) {
+    this.deps.push(dep);
+  }
+
+  //   当视图发生变化、通知订阅者
+  notify() {
+    //   遍历dep
+    this.deps.forEach((dep) => {
+      // 数组中的dep实则是watcher的实例
+      dep.updateView();
+    });
+  }
+}
+
+// 发布订阅
+class Watcher {
+  constructor() {
+    // 将当前watcher的实例指向静态dep的target 实现组件间的通信
+    Dep.target = this;
+  }
+  updateView() {
+    console.log("属性更新");
   }
 }
