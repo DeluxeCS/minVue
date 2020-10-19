@@ -1,11 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MinVue</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DefineProperty</title>
+  </head>
+  <body>
+    <div class="app">
+      <p id="name"></p>
+    </div>
+    <script>
+      var obj = {};
+
+      // 调用Object对象的defineProperty API
+      Object.defineProperty(obj, "name", {
+        // 为数据添加getter/setter方法
+        get() {
+          //   获取节点数据
+          return document.querySelector("#name").innerHTML;
+        },
+        set(newVal) {
+          document.querySelector("#name").innerHTML = newVal;
+        },
+      });
+      obj.name = "Jerry";
+    </script>
+  </body>
 </html>
